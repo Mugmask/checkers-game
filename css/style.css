@@ -1,8 +1,19 @@
+@font-face {
+  font-family: "Rocher";
+  src: url(https://assets.codepen.io/9632/RocherColorGX.woff2);
+}
+@font-palette-values --Mint {
+  font-family: Rocher;
+  base-palette: 7;
+}
+.mint {
+  font-palette: --Mint;
+}
 :root {
   --text-color: #000000;
   --row-border: 1px solid #00000028;
   --background-color-main: #ffffba;
-  --background-color-board: #e90acf55;
+  --background-color-board: #eca9e4;
   --background-color-square: #a9e7f3fa;
   --background-dark-token: #aaa1e1;
   --background-ligth-token: #ffffff;
@@ -12,14 +23,14 @@
   --checkers-board-width: 750px;
   --checkers-board-heigth: 750px;
 }
-
 body {
   margin: 0;
   padding: 0;
   color: var(--text-color);
   height: 100vh;
+  font-size: 20px;
   background: var(--background-color-main);
-  font-family: "Gill Sans", sans-serif;
+  font-family: Rocher;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -52,6 +63,12 @@ body {
   width: 80%;
   height: 80%;
   border-radius: 50%;
+  cursor: pointer;
+}
+.possibleMovement::after {
+  content: "❤";
+  color: #ea5858;
+  font-size: 40px;
   cursor: pointer;
 }
 .dark {
