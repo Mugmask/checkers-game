@@ -6,8 +6,22 @@
   font-family: Rocher;
   base-palette: 7;
 }
+@font-palette-values --Red {
+  font-family: Rocher;
+  base-palette: 1;
+}
+@font-palette-values --Gray {
+  font-family: Rocher;
+  base-palette: 9;
+}
 .mint {
   font-palette: --Mint;
+}
+.red {
+  font-palette: --Red;
+}
+.gray {
+  font-palette: --Gray;
 }
 :root {
   --text-color: #000000;
@@ -20,8 +34,8 @@
   --border-dark-token: 5px double rgb(136 134 210);
   --border-ligth-token: 5px double rgb(216, 215, 215);
   --box-shadow-board: 0 4px 30px rgba(0, 0, 0, 0.158);
-  --checkers-board-width: 750px;
-  --checkers-board-heigth: 750px;
+  --checkers-board-width: 700px;
+  --checkers-board-heigth: 700px;
 }
 body {
   margin: 0;
@@ -36,7 +50,14 @@ body {
   align-items: center;
   justify-content: center;
 }
-
+h1,
+h3 {
+  margin: 0;
+  padding: 0;
+}
+.header-container {
+  margin: 10px;
+}
 .checkers-board {
   width: var(--checkers-board-width);
   height: var(--checkers-board-heigth);
@@ -45,6 +66,23 @@ body {
   flex-direction: column;
   background-color: var(--background-color-board);
   box-shadow: var(--box-shadow-boardhadow-board);
+}
+.score {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.score-container {
+  height: 55px;
+  width: 115px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px;
 }
 .row-board {
   display: flex;
@@ -64,6 +102,9 @@ body {
   height: 80%;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .possibleMovement::after {
   content: "❤";
@@ -81,4 +122,7 @@ body {
 }
 .active {
   background-color: var(--background-color-square);
+}
+.glow {
+  box-shadow: 0px 0px 14px 0px rgba(65, 43, 185, 0.75);
 }

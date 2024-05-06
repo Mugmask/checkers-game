@@ -1,118 +1,78 @@
 const checkersBoard = document.getElementsByClassName("checkers-board")[0];
+const allRows = document.getElementsByClassName("row-board");
+const allColumns = document.getElementsByClassName("square-board");
+
 placeTokenToBoard();
+sideToMove(true);
 
 function placeTokenToBoard() {
   for (let row = 0; row < checkersBoard.children.length; row++) {
-    for (
-      let column = 0;
-      column < checkersBoard.children[row].children.length;
-      column++
-    ) {
-      if (row <= 2) {
+    for (let column = 0; column < checkersBoard.children[row].children.length; column++) {
+      if (checkersBoard.children[row].children[column].className.includes("active") && (row <= 2 || row >= 5)) {
         const token = document.createElement("div");
-        token.className = "token dark";
-        token.id = "row=" + row + "&col=" + column;
-        token.addEventListener("click", showPossibleMove.bind(this, token));
-        if (
-          checkersBoard.children[row].children[column].className.includes(
-            "active"
-          )
-        ) {
-          checkersBoard.children[row].children[column].appendChild(token);
-        }
-      } else if (row >= 5) {
-        const token = document.createElement("div");
-        token.className = "token ligth";
-        token.id = "row=" + row + "&col=" + column;
-        token.addEventListener("click", showPossibleMove.bind(this, token));
-        if (
-          checkersBoard.children[row].children[column].className.includes(
-            "active"
-          )
-        ) {
-          checkersBoard.children[row].children[column].appendChild(token);
-        }
+        token.className = row <= 2 ? "token dark" : row >= 5 ? "token ligth" : "";
+        token.addEventListener("click", showPossibleMove);
+        checkersBoard.children[row].children[column].appendChild(token);
       }
     }
   }
 }
-function showPossibleMove(token) {
-  const activeMoves = document.getElementsByClassName("possibleMovement");
-  let actualPosition = stringToPosition(token.id);
-  const posiblesMoves = token.classList.contains("dark")
-    ? [
-        checkersBoard.children[actualPosition.row + 1].children[
-          actualPosition.col - 1
-        ] &&
-        checkersBoard.children[actualPosition.row + 1].children[
-          actualPosition.col - 1
-        ].children.length == 0
-          ? checkersBoard.children[actualPosition.row + 1].children[
-              actualPosition.col - 1
-            ]
-          : null,
-        checkersBoard.children[actualPosition.row + 1].children[
-          actualPosition.col + 1
-        ] &&
-        checkersBoard.children[actualPosition.row + 1].children[
-          actualPosition.col + 1
-        ].children.length == 0
-          ? checkersBoard.children[actualPosition.row + 1].children[
-              actualPosition.col + 1
-            ]
-          : null,
-      ].filter(Boolean)
-    : [
-        checkersBoard.children[actualPosition.row - 1].children[
-          actualPosition.col - 1
-        ] &&
-        checkersBoard.children[actualPosition.row - 1].children[
-          actualPosition.col - 1
-        ].children.length == 0
-          ? checkersBoard.children[actualPosition.row - 1].children[
-              actualPosition.col - 1
-            ]
-          : null,
-        checkersBoard.children[actualPosition.row - 1].children[
-          actualPosition.col + 1
-        ] &&
-        checkersBoard.children[actualPosition.row - 1].children[
-          actualPosition.col + 1
-        ].children.length == 0
-          ? checkersBoard.children[actualPosition.row - 1].children[
-              actualPosition.col + 1
-            ]
-          : null,
-      ].filter(Boolean);
-  if (
-    !posiblesMoves.every((item) =>
-      item ? Array.from(activeMoves).includes(item) : null
-    )
-  ) {
-    cleanPossibleMoves();
-    posiblesMoves.forEach((x, i) => {
-      if (x) {
-        side = i ? "+" : "-";
-        x.classList.toggle("possibleMovement");
-        x.onclick = tokenToPossibleMove.bind(this, token, side, posiblesMoves);
+function showPossibleMove(evt) {
+  const token = evt.target;
+  const rowToken = token.parentElement.parentElement;
+  const columnToken = token.parentElement;
+  const rowIndexPosition = Array.from(allRows).indexOf(rowToken);
+  const columnIndexPosition = Array.from(allColumns).indexOf(columnToken);
+  const posibleRowsMoves = [
+    Array.from(allRows)[rowIndexPosition + 1],
+    Array.from(allRows)[rowIndexPosition - 1],
+  ].filter(Boolean);
+  const posibleColumnsMoves = [
+    Array.from(allColumns)[columnIndexPosition + 7],
+    Array.from(allColumns)[columnIndexPosition + 9],
+    Array.from(allColumns)[columnIndexPosition - 7],
+    Array.from(allColumns)[columnIndexPosition - 9],
+  ].filter(Boolean);
+
+  if (token.className.includes("dark") && posibleRowsMoves.length > 1 && posibleColumnsMoves.length > 1) {
+    posibleRowsMoves.pop();
+    posibleColumnsMoves.pop();
+    posibleColumnsMoves.pop();
+  } else if (token.className.includes("ligth") && posibleRowsMoves.length > 1 && posibleColumnsMoves.length > 1) {
+    posibleRowsMoves.shift();
+    posibleColumnsMoves.shift();
+    posibleColumnsMoves.shift();
+  }
+  const finalPosibleMoves = [];
+  posibleRowsMoves.forEach((row) => {
+    posibleColumnsMoves.forEach((column) => {
+      const columnIndex = Array.from(row.children).indexOf(column);
+      if (columnIndex != -1 && !Array.from(row.children)[columnIndex].children.length) {
+        finalPosibleMoves.push(Array.from(row.children)[columnIndex]);
       }
     });
-  } else {
-    cleanPossibleMoves();
+  });
+
+  if (finalPosibleMoves.length) {
+    const activeMoves = document.getElementsByClassName("possibleMovement");
+    if (!finalPosibleMoves.every((item) => Array.from(activeMoves).includes(item))) {
+      cleanPossibleMoves();
+      finalPosibleMoves.forEach((x) => {
+        x.classList.toggle("possibleMovement");
+        x.onclick = (evt) => moveToken(token, finalPosibleMoves, evt);
+      });
+    } else {
+      cleanPossibleMoves();
+    }
   }
 }
-function tokenToPossibleMove(token, side, posiblesMoves, evt) {
-  let selectedSquare = evt.target;
-  let position = stringToPosition(token.id);
-  position.row = token.classList.contains("dark")
-    ? position.row + 1
-    : position.row - 1;
-  position.col = side == "+" ? position.col + 1 : position.col - 1;
-  selectedSquare.addEventListener("click", null);
-  selectedSquare.appendChild(token);
-  token.id = "row=" + position.row + "&col=" + position.col;
-  posiblesMoves.forEach((x) => (x.onclick = ""));
+function moveToken(token, finalPosibleMoves, evt) {
   cleanPossibleMoves();
+  let selectedSquare = evt.target;
+  selectedSquare.appendChild(token);
+  finalPosibleMoves.forEach((x) => (x.onclick = ""));
+
+  sideToMove(!token.className.includes("ligth"));
 }
 function cleanPossibleMoves() {
   const activeMoves = document.getElementsByClassName("possibleMovement");
@@ -120,18 +80,30 @@ function cleanPossibleMoves() {
   Array.from(activeMoves).forEach((activeMove) => {
     activeMove.classList.remove("possibleMovement");
   });
-}
-function stringToPosition(string) {
-  const params = new URLSearchParams(string);
-  const obj = {};
-  for (const [key, value] of params.entries()) {
-    obj[key] = parseInt(value, 10);
-  }
-  return obj;
-}
-function removeClickEvents() {
-  let posibleClickEvents = document.getElementsByClassName("active");
-  Array.from(posibleClickEvents).forEach((x) => {
-    x.removeEventListener("click", null);
+  Array.from(allColumns).forEach((column) => {
+    column.onclick = "";
   });
+}
+function sideToMove(side) {
+  const allDarkTokens = document.getElementsByClassName("dark");
+  const allligthTokens = document.getElementsByClassName("ligth");
+  if (side) {
+    Array.from(allDarkTokens).forEach((x) => {
+      x.style.pointerEvents = "none";
+      x.classList.remove("glow");
+    });
+    Array.from(allligthTokens).forEach((x) => {
+      x.style.pointerEvents = "";
+      x.classList.add("glow");
+    });
+  } else {
+    Array.from(allligthTokens).forEach((x) => {
+      x.style.pointerEvents = "none";
+      x.classList.remove("glow");
+    });
+    Array.from(allDarkTokens).forEach((x) => {
+      x.style.pointerEvents = "";
+      x.classList.add("glow");
+    });
+  }
 }
