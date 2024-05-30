@@ -24,19 +24,11 @@ function showPossibleMove(evt) {
   const token = evt.target;
   const finalPosibleMoves = possibleMove(token)[0];
 
-  if (finalPosibleMoves.length) {
-    const activeMoves = document.getElementsByClassName("possibleMovement");
-    //corregir cuando tiene un movimiento y ya esta marcado en el board
-    if (!finalPosibleMoves.every((item) => Array.from(activeMoves).includes(item))) {
-      cleanPossibleMoves();
-      finalPosibleMoves.forEach((x) => {
-        x.classList.toggle("possibleMovement");
-        x.onclick = (evt) => moveToken(token, finalPosibleMoves, evt);
-      });
-    } else {
-      cleanPossibleMoves();
-    }
-  }
+  cleanPossibleMoves();
+  finalPosibleMoves.forEach((x) => {
+    x.classList.add("possibleMovement");
+    x.onclick = (evt) => moveToken(token, finalPosibleMoves, evt);
+  });
 }
 function moveToken(token, finalPosibleMoves, evt) {
   cleanPossibleMoves();
@@ -44,6 +36,7 @@ function moveToken(token, finalPosibleMoves, evt) {
   selectedSquare.appendChild(token);
   finalPosibleMoves.forEach((x) => (x.onclick = ""));
 
+  isQueen(selectedSquare, token);
   sideToMove(!token.className.includes("ligth"));
   checkAttack(token);
 }
@@ -214,4 +207,12 @@ function glowOnAttack(token) {
   }
   token.style.pointerEvents = "";
   token.classList.add("glowAttack");
+}
+function isQueen(selectedSquare, token) {
+  if (
+    Array.from(allRows)[0].contains(selectedSquare) ||
+    Array.from(allRows)[allRows.length - 1].contains(selectedSquare)
+  ) {
+    token.classList.add("queen");
+  }
 }

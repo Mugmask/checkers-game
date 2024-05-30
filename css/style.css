@@ -66,6 +66,7 @@ h3 {
   flex-direction: column;
   background-color: var(--background-color-board);
   box-shadow: var(--box-shadow-boardhadow-board);
+  max-width: 90vw;
 }
 .score {
   margin: 0;
@@ -120,6 +121,11 @@ h3 {
   color: #ea5858;
   font-size: 40px;
   cursor: pointer;
+}
+.queen::after {
+  content: "♛";
+  font-size: 40px;
+  color: #00000088;
 }
 .dark {
   border: var(--border-dark-token);
